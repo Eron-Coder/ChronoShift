@@ -1,20 +1,175 @@
 # ChronoShift Architecture
 
-ChronoShift is intentionally small and dependency-free. The project uses classic browser scripts instead of a bundler so it can run from `index.html` or from the included static server.
+## Overview
 
-## Runtime Flow
+ChronoShift is a lightweight, dependency-free 2D puzzle-platformer built entirely with HTML5 Canvas, CSS, and vanilla JavaScript.
 
-1. `config.js` initializes the canvas, shared constants, player state, particles, camera, flash, shake, and parallax data.
-2. `levels.js` defines all rooms and timeline-specific objects.
-3. `engine.js` handles collision, movement, jumping, item pickup, hazards, timeline switching, overlays, death, and level completion.
-4. `render.js` draws the background, inactive timeline ghosts, transformed objects, player, particles, banners, and screen effects.
-5. `main.js` runs the requestAnimationFrame loop and calls update/draw functions in order.
+The project follows a modular architecture where gameplay logic, rendering, level data, and configuration are separated into dedicated files. This structure keeps the codebase easy to understand, extend, and maintain while supporting the game's core mechanic: switching between the Past and Future timelines.
 
-## Level Object Schema
+---
 
-Most level entries use this shape:
+# High-Level Architecture
 
-```js
+```text
+Keyboard Input
+       │
+       ▼
+    main.js
+(Game Loop Controller)
+       │
+       ▼
+   engine.js
+(Game Logic Layer)
+       │
+ ┌─────┼─────┐
+ ▼     ▼     ▼
+State Levels Timeline
+Data   Data   State
+       │
+       ▼
+  render.js
+(Rendering Layer)
+       │
+       ▼
+ HTML5 Canvas
+```
+
+---
+
+# Project Structure
+
+```text
+ChronoShift
+├── assets/
+├── docs/
+├── scripts/
+├── src/
+│   ├── js/
+│   │   ├── config.js
+│   │   ├── engine.js
+│   │   ├── levels.js
+│   │   ├── main.js
+│   │   └── render.js
+│   └── styles.css
+├── index.html
+├── package.json
+└── README.md
+```
+
+---
+
+# Module Responsibilities
+
+| Module    | Responsibility                                                                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------- |
+| config.js | Shared constants, player state, particles, camera, screen effects, and timeline configuration               |
+| levels.js | Defines all levels, rooms, puzzle objects, and timeline-specific layouts                                    |
+| engine.js | Handles movement, collision detection, timeline switching, item collection, hazards, death, and progression |
+| render.js | Draws levels, player, particles, UI, visual effects, timeline ghosts, and animations                        |
+| main.js   | Runs the main game loop and coordinates update/render execution                                             |
+
+---
+
+# Runtime Flow
+
+### Initialization
+
+When the game starts:
+
+1. `config.js` initializes global state.
+2. `levels.js` loads level definitions.
+3. `main.js` starts the game loop.
+4. The first frame is rendered.
+
+### Frame Execution
+
+Each animation frame follows:
+
+```text
+Player Input
+      │
+      ▼
+Game Update
+(engine.js)
+      │
+      ▼
+Collision & Logic
+      │
+      ▼
+State Changes
+      │
+      ▼
+Rendering
+(render.js)
+      │
+      ▼
+Canvas Output
+```
+
+---
+
+# Timeline System
+
+The timeline mechanic is the central gameplay feature of ChronoShift.
+
+The game maintains a global timeline state:
+
+```text
+PAST
+or
+FUTURE
+```
+
+Only objects belonging to the active timeline participate in:
+
+* Collision detection
+* Hazard checks
+* Interactions
+* Puzzle logic
+
+---
+
+## Timeline Switching Flow
+
+When the player presses the timeline switch key:
+
+```text
+Player Presses E / Shift
+            │
+            ▼
+        switchTL()
+            │
+            ▼
+Timeline State Changes
+            │
+            ▼
+Active Objects Updated
+            │
+            ▼
+Collision Recalculated
+            │
+            ▼
+Visual Effects Triggered
+            │
+            ▼
+Scene Re-rendered
+```
+
+The switch process also:
+
+* Updates HUD indicators
+* Triggers screen flash effects
+* Produces particles
+* Applies camera shake
+* Checks for timeline overlap issues
+
+---
+
+# Level Object Schema
+
+Most gameplay objects use the following structure:
+
+```javascript
 {
   t: 'plat',
   tl: 'past',
@@ -28,19 +183,98 @@ Most level entries use this shape:
 }
 ```
 
-Common fields:
+---
 
-- `t`: gameplay type, such as `plat`, `wall`, `door`, `key`, `crystal`, `medal`, `spike`, `exit`, or `deco`.
-- `tl`: active timeline, either `past`, `future`, or `both`.
-- `x`, `y`, `w`, `h`: rectangle used for drawing and collision.
-- `pair`: optional shared identifier for two versions of the same timeline object.
-- `vis`: optional renderer hint for special art, such as `bridge_whole`, `bridge_broken`, `idol_solid`, `idol_crumbled`, `torch_lit`, `torch_cold`, `pit_floor`, or `pit_spikes`.
-- `id`: collectible or unlock identifier stored in `objState`.
-- `keyId`: required item id for doors and exits.
-- `needsCrystal`: marks the final portal crystal requirement.
+## Common Fields
 
-## Timeline Switching
+| Field        | Description                                   |
+| ------------ | --------------------------------------------- |
+| t            | Object type                                   |
+| tl           | Active timeline (`past`, `future`, or `both`) |
+| x            | Horizontal position                           |
+| y            | Vertical position                             |
+| w            | Width                                         |
+| h            | Height                                        |
+| pair         | Shared identifier linking timeline variants   |
+| vis          | Renderer hint for visual appearance           |
+| id           | Unique identifier used for collectibles       |
+| keyId        | Required key identifier for doors/exits       |
+| needsCrystal | Indicates crystal requirement for progression |
 
-The current timeline is stored in `TL`. When the player presses `E` or `Shift`, `switchTL()` toggles between `PAST` and `FUTURE`, updates the HUD, emits particles, flashes the screen, shakes the camera, and checks whether the player switched into a newly solid object.
+---
 
-Collision only considers objects whose `tl` is active in the current timeline. The renderer also draws faint "ghost" versions of paired objects from the inactive timeline so the player can read the puzzle before switching.
+# Object Types
+
+| Type    | Purpose                         |
+| ------- | ------------------------------- |
+| plat    | Traversable platform            |
+| wall    | Solid obstacle                  |
+| spike   | Hazard that kills the player    |
+| key     | Collectible item                |
+| door    | Locked progression gate         |
+| crystal | Special progression collectible |
+| medal   | Optional collectible            |
+| exit    | Level completion portal         |
+| deco    | Decorative environment object   |
+
+---
+
+# Timeline Visualization
+
+To improve puzzle readability, ChronoShift renders inactive timeline objects as translucent "ghost" versions.
+
+This allows players to:
+
+* Preview alternate paths.
+* Understand environmental changes.
+* Plan solutions before switching timelines.
+
+Ghost rendering is handled by `render.js` and primarily applies to paired timeline objects.
+
+---
+
+# Collision System
+
+The collision system only evaluates objects active in the current timeline.
+
+This ensures:
+
+* Accurate puzzle behavior.
+* Consistent physics.
+* Clear separation between Past and Future world states.
+
+Objects belonging to inactive timelines are ignored by gameplay systems while remaining visible through ghost rendering when applicable.
+
+---
+
+# Design Principles
+
+ChronoShift was developed around several key principles:
+
+### One Strong Mechanic
+
+The timeline switch mechanic drives every puzzle and progression challenge.
+
+### Readability First
+
+Visual clarity is prioritized so players can understand timeline changes immediately.
+
+### Dependency-Free Development
+
+The project uses only browser-native technologies, minimizing complexity and setup requirements.
+
+### Expandable Level Design
+
+Levels are data-driven, allowing new rooms, objects, and puzzles to be added with minimal code changes.
+
+### Fast Iteration
+
+The architecture supports rapid experimentation and refinement during development.
+
+---
+
+
+
+# Summary
+
+ChronoShift separates game state, rendering, level data, and gameplay logic into independent modules while centering the entire experience around a dynamic Past/Future timeline system. This architecture enables clean code organization, scalable puzzle design, and a responsive gameplay experience built around temporal exploration and problem solving.
