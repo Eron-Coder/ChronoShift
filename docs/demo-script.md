@@ -18,7 +18,7 @@ The game can be launched using any of the following methods.
 
 Open the deployed version in a modern browser:
 
-:contentReference[oaicite:0]{index=0}
+(https://chrono-shift-gray.vercel.app/)
 
 Recommended browsers:
 
