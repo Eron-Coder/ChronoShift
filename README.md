@@ -1,116 +1,71 @@
 # ChronoShift
 
-## Track
+ChronoShift is a browser-based 2D timeline-shifting puzzle platformer. The player explores ancient temple rooms, switching between Past and Future timelines to change platforms, hazards, keys, and exit paths.
 
-Build a Game
+This repo is packaged from the current `chronoshift_fbg.html` build and is ready to run as a static site.
 
-## Problem Statement
+## Run Locally
 
-Build a simple 2D puzzle game where the player can switch between two versions of the same room: **Past** and **Future**.
+```bash
+npm start
+```
 
-Some platforms, doors, hazards, keys, or paths exist only in one timeline. The player must switch between timelines to solve puzzles and reach the exit.
+Then open:
 
-The goal is to create a small but complete playable game with one strong core mechanic: **timeline switching**.
+```text
+http://localhost:5500
+```
 
-## Theme
+You can also open `index.html` directly in a browser.
 
-You are trapped in a broken timeline. To escape, you must move between the Past and the Future, using objects from both timelines to solve puzzles.
+## Controls
 
-## Core Requirements
+| Action | Keys |
+| --- | --- |
+| Move | `A` / `D` |
+| Jump | `W` |
+| Switch timeline | `E` |
+| Restart room | `R` |
 
-Your project must include:
+## Project Structure
 
-1. A controllable player character.
-2. At least **3 small levels or rooms**.
-3. A timeline switch mechanic:
-   - One key/button switches between Past and Future.
-   - Objects should visibly change between the two timelines.
-4. At least **3 object types**, such as:
-   - Platform
-   - Wall
-   - Key
-   - Door
-   - Spike or hazard
-   - Exit portal
-   - Collectible
-5. A clear win condition.
-6. A restart option if the player gets stuck or dies.
-7. Basic instructions for how to play.
+```text
+.
+├── assets
+│   ├── timeline-conflict-right.jpg
+│   └── aztec-temple-reference.jpg
+├── docs
+│   └── ARCHITECTURE.md
+├── index.html
+├── package.json
+├── scripts
+│   └── serve.mjs
+└── src
+    └── legacy modular source files
+```
 
-## Minimum Viable Product
+## Connections / Dependencies
 
-A successful MVP should have:
+- No build step is required.
+- No audio file is required; adventurous background music is generated with the Web Audio API after the player clicks `Enter the Temple`.
+- The intro background image is stored locally at `assets/timeline-conflict-right.jpg`.
+- The HTML currently imports Google Fonts from `fonts.googleapis.com`. If the game must run fully offline, replace that import with local font files or CSS fallback fonts.
 
-- A playable character.
-- Three short levels.
-- Past/Future switching.
-- Objects that behave differently across timelines.
-- A win screen or completion message.
+## Deploy
 
-Simple shapes, placeholder art, and basic sound effects are acceptable.
+This can be deployed to any static host:
 
-## Example Mechanics
+- GitHub Pages
+- Netlify
+- Vercel
+- Cloudflare Pages
 
-- A platform exists in the Past but is broken in the Future.
-- A locked door exists in the Future, but the key exists in the Past.
-- A spike trap appears only in one timeline.
-- The player must switch timelines mid-level to create a safe path.
-- Some walls become passable only in the Future.
+For GitHub Pages, publish the repo root and use `index.html` as the entry point.
 
-## Suggested Tech Stack
+## Repo Setup Checklist
 
-You may use any stack, including:
-
-- Pygame
-- Godot
-- Unity
-- Phaser
-- HTML Canvas
-- JavaScript
-- Python
-
-## Stretch Goals
-
-- More levels
-- Timer or score
-- Limited number of timeline switches
-- Animated character
-- Sound effects
-- Background music
-- Collectibles
-- Level selection screen
-- More puzzle mechanics
-
-## AI Tool Usage
-
-You may use AI tools for:
-
-- Code generation
-- Debugging
-- Art prompts
-- Level ideas
-- README writing
-- Refactoring
-
-You must mention in your final README how AI tools were used.
-
-## Demo Expectations
-
-Your final demo should show:
-
-1. Player movement.
-2. Timeline switching.
-3. At least one puzzle solved using the Past/Future mechanic.
-4. Win or level completion screen.
-5. A brief explanation of how the timeline system works.
-
-## Judging Focus
-
-You will be judged on:
-
-- Completeness
-- Fun factor
-- Clarity of gameplay
-- Use of the timeline mechanic
-- Polish
-- Demo quality
+1. Confirm the repo remote URL.
+2. Commit the current files.
+3. Push to GitHub.
+4. Enable GitHub Pages or connect the repo to a static hosting provider.
+5. Optional: replace Google Fonts with local fonts for a fully offline build.
