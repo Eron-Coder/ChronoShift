@@ -188,7 +188,7 @@ Restrict progression and guide navigation.
 
 ### Keys
 
-Unlock new areas and progression paths.
+Unlock new levels and progression paths.
 
 ### Doors
 
@@ -197,6 +197,14 @@ Require exploration and planning.
 ### Hazards
 
 Punish careless decisions and reward awareness.
+- spikes
+- torches when lit
+
+### Accessories
+
+Bonus features to assist player
+- Trebuchets : to launch in air
+- Teleporters : to travel from entry to exit launchpads
 
 ### Exit Portal
 
